@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np 
 
 import pyvisa as visa
@@ -7,7 +6,7 @@ VISA_RM = visa.ResourceManager('@py')
 
 
 class RigolSupply():
-    def __init__(self, address, n_ch=2, visa_resource_manager=VISA_RM):
+    def __init__(self, address, n_ch, visa_resource_manager=VISA_RM):
         resource_str = f'TCPIP0::{address:s}::INSTR'
         print(resource_str)
         self.resource = VISA_RM.open_resource(resource_str, write_termination='\n', read_termination='\n')
@@ -54,9 +53,27 @@ class RigolSupply():
     def get_ocp(self):
          return [self.query(f":OUTP:OCP:VAL? CH{ch}") for ch in range(self.n_ch)]
     
-
-
-supply_IPs = ["10.10.1.50", "10.10.1.51", "10.10.1.52", "10.10.1.53"]
-supply_channels = [2, 2, 3, 2]
-fpga_ps = [0, 2]
-supplies = [RigolSupply(ip) for ip,n_ch in zip(supply_IPs, supply_channels)]
+def power_cycle_all_supplies(supply_handlers):
+    for supply in supply_handlers:
+        print(supply.IDN)
+        print(supply.n_ch)
+        for ch in range(supply.n_ch):
+            print(supply.enable_output(ch+1))
+            time.sleep(1)
+            print(supply.disable_output(ch+1))
+    
+def power_off_all_supplies(supply_handlers):
+    for supply in supply_handlers:
+        print(supply.IDN)
+        print(supply.n_ch)
+        for ch in range(supply.n_ch):
+            print(supply.disable_output(ch+1))
+            
+            
+def report_status(supply_handlers):
+    for supply in supply_handlers:
+        idn = supply.IDN
+        channel_stats = []
+        for ch in range(supply.n_ch):
+            channel_stats += [supply.query(f"OUTP:STAT? CH{ch+1}")]
+        print(f"Supply IDN: {idn}\t {channel_stats}")
