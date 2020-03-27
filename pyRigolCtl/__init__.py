@@ -1,1 +1,1 @@
-from .pyRigolCtl import RigolSupply
+from .pyRigolCtl import *
