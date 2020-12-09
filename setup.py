@@ -12,5 +12,5 @@ setup(name='pyRigolCtl',
       author='Sean Griffin',
       author_email='sean.c.griffin@gmail.com',
       packages=['pyRigolCtl'],
-      install_requires=['pyvisa', 'pyvisa-py', 'pyyaml'],
+      install_requires=['pyvisa', 'pyvisa-py', 'pyyaml','numpy'],
       )
